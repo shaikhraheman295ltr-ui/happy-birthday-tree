@@ -69,6 +69,7 @@ const bloom   = $('bloom');
 const replay  = $('replay');
 const memories= $('memories');
 const driftRoot = $('drift-root');
+const bio = $('bio');
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isRecord     = new URLSearchParams(location.search).has('record');
@@ -507,7 +508,8 @@ function treeFrame(now){
 
   if (!window.bdayDone && t >= T.done) window.bdayDone = true;
   if (!replayArmed && t >= T.done + 1.0){ replayArmed = true; armReplay(); }
-  if (!memoriesShown && t >= T.done + 2.4) enterMemories();
+  if (!bioShown && t >= T.done + 2.4){ bioShown = true; bioT0 = t; showBio(true); }
+  if (bioShown && !memoriesShown && t >= bioT0 + BIO_HOLD) enterMemories();
 
   treeRAF = requestAnimationFrame(treeFrame);
 }
@@ -878,9 +880,28 @@ function armReplay(){
 }
 
 /* ============================================================
-   ACT 5 — THE MEMORIES (React DriftWall)
-   The tree's own rAF hands off into the photo wall once it has
-   settled. React is imported lazily (code-split by Vite) so the
+   ACT 5 — THE STORY (ARPITA's biography card)
+   After the tree settles, her story plays for a while, then the
+   film hands off into the memories wall.
+   ============================================================ */
+const BIO_HOLD = 11;   /* seconds the story card holds before the wall */
+let bioShown = false;
+let bioT0 = 0;
+let bioTimer = 0;
+function showBio(on){
+  if (on){
+    bio.hidden = false;
+    requestAnimationFrame(() => bio.classList.add('is-in'));
+  } else {
+    bio.classList.remove('is-in');
+    bio.hidden = true;
+  }
+}
+
+/* ============================================================
+   ACT 6 — THE MEMORIES (React DriftWall)
+   The tree's own rAF hands off into the photo wall once the bio
+   has held. React is imported lazily (code-split by Vite) so the
    film's first four acts never pay for it.
    ============================================================ */
 let memoriesShown = false;
@@ -898,6 +919,7 @@ function enterMemories(){
   if (memoriesShown) return;
   memoriesShown = true;
   showWish(false);
+  showBio(false);
   mountWall();
   memories.hidden = false;
   requestAnimationFrame(() => memories.classList.add('is-in'));
@@ -908,7 +930,9 @@ function resetAll(){
   treeStop();
   showWish(false);
   window.bdayDone = false; replayArmed = false;
-  memoriesShown = false;
+  memoriesShown = false; bioShown = false;
+  if (bioTimer){ clearTimeout(bioTimer); bioTimer = 0; }
+  showBio(false);
   memories.classList.remove('is-in'); memories.hidden = true;
   replay.classList.remove('is-shown'); replay.hidden = true;
   if (filmTL){ filmTL.pause(0); }
@@ -946,7 +970,8 @@ resize();
 
 if (reduceMotion){
   drawFinal();
-  enterMemories();
+  showBio(true);
+  bioTimer = setTimeout(() => enterMemories(), BIO_HOLD * 1000);
 } else {
   buildMotes();
   document.fonts && document.fonts.ready.then(() => { refreshRig(); setDraw(0); });
