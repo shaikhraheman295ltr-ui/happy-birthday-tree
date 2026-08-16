@@ -1,6 +1,6 @@
 # Happy Birthday Tree
 
-A birthday film in five acts: draw a Cupid's bow, strike a beating heart, watch it bloom into a tree of hearts, and land on a wall of drifting memories. Vanilla JS + GSAP + a React photo wall (DriftWall from React Bits), one canvas, no framework until the final act.
+A birthday film in five acts: draw a Cupid's bow, strike a beating heart, watch it bloom into a tree of hearts, and land on a two-row accordion of favourite memories. Vanilla JS + GSAP + a React photo accordion (AccordionGallery from React Bits), one canvas, no framework until the final act.
 
 - **Live on Vercel:** https://happy-birthday-tree-swart.vercel.app
 - **Live on GitHub Pages:** https://shaikhraheman295ltr-ui.github.io/happy-birthday-tree/
@@ -11,18 +11,18 @@ A birthday film in five acts: draw a Cupid's bow, strike a beating heart, watch 
 2. **Act 2 — The Flood** — the heart bursts into a circle of rose that swallows the frame.
 3. **Act 3 — The Wish** — kinetic type rises out of the colour: "Happy Birthday".
 4. **Act 4 — The Tree** — a blossom tree grows on canvas and blooms into a heart of petals.
-5. **Act 5 — The Memories** — the tree hands off into a drifting, tilt-on-pointer wall of Arpita's photos ("Happy Birthday ARPITA"); hover a tile to lift it into full colour.
+5. **Act 5 — The Memories** — the tree hands off into a two-row photo accordion of Arpita's five favourites ("Happy Birthday ARPITA"); hover or click a panel to expand it into full colour.
 
-Built-in accessibility: reduced-motion support (the film hands straight to the wall, DriftWall stops drifting), screen-reader text, keyboard control for the bow and the tiles.
+Built-in accessibility: reduced-motion support (the film hands straight to the gallery, animations collapse to instant), screen-reader text, keyboard control for the bow and the panels.
 
 ## Project structure
 
 - `birthday.js` / `birthday.css` / `index.html` — the vanilla + GSAP film (Acts 1–4) and Act 5 markup.
-- `src/DriftWall.jsx` / `src/DriftWall.css` — the React DriftWall component (React Bits), verbatim.
-- `src/drift-mount.jsx` — the React entry: mounts `<DriftWall>` into `#drift-root` with Arpita's photos from `public/image/` (`1.0.jpg` … `2.0.jpg`), responsive column count, tuned props.
+- `src/AccordionGallery.jsx` / `src/AccordionGallery.css` — the React AccordionGallery component (React Bits), verbatim.
+- `src/gallery-mount.jsx` — the React entry: mounts two `<AccordionGallery>` rows into `#gallery-root` with five of Arpita's photos from `public/image/` (`1.0.jpg` … `1.4.jpg`), tuned props.
 - `public/image/` — the photos that make up the memory wall.
 
-React is lazy-loaded: `birthday.js` dynamic-imports `src/drift-mount.jsx` only when the film reaches Act 5, so the first four acts never pay for the React bundle.
+React is lazy-loaded: `birthday.js` dynamic-imports `src/gallery-mount.jsx` only when the film reaches Act 5, so the first four acts never pay for the React bundle.
 
 ## Local development
 
