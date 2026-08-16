@@ -68,7 +68,7 @@ const uline   = $('uline').querySelector('.uline__path');
 const bloom   = $('bloom');
 const replay  = $('replay');
 const memories= $('memories');
-const galleryRoot = $('gallery-root');
+const driftRoot = $('drift-root');
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isRecord     = new URLSearchParams(location.search).has('record');
@@ -878,19 +878,19 @@ function armReplay(){
 }
 
 /* ============================================================
-   ACT 5 — THE MEMORIES (two-row React AccordionGallery)
-   The tree's own rAF hands off into the photo accordion once it
-   has settled. React is imported lazily (code-split by Vite) so
-   the film's first four acts never pay for it.
+   ACT 5 — THE MEMORIES (React DriftWall)
+   The tree's own rAF hands off into the photo wall once it has
+   settled. React is imported lazily (code-split by Vite) so the
+   film's first four acts never pay for it.
    ============================================================ */
 let memoriesShown = false;
 let wallMounted = false;
 function mountWall(){
   if (wallMounted) return;
   wallMounted = true;
-  import('./src/gallery-mount.jsx')
-    .then(({ mountGallery }) => {
-      if (document.body.contains(galleryRoot)) mountGallery(galleryRoot);
+  import('./src/drift-mount.jsx')
+    .then(({ mountDriftWall }) => {
+      if (document.body.contains(driftRoot)) mountDriftWall(driftRoot);
     })
     .catch(() => { wallMounted = false; });
 }

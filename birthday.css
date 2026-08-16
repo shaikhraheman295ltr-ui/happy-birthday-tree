@@ -513,19 +513,8 @@ body{
 .memories.is-in .memories__sub{ opacity:1; transform:translateY(0); filter:blur(0); }
 .memories.is-in .memories__rule{ opacity:1; transform:translateY(0) scaleX(1); }
 
-/* the React accordion fills the frame behind the title: two centred rows */
-.memories__wall{ position:absolute; inset:0; z-index:1; display:flex; align-items:center; justify-content:center; }
-.memories__rows{ display:flex; flex-direction:column; gap:14px; width:min(94vw,1500px); }
-.memories__rows .accordion-gallery{ width:100%; }
-
-/* keep the accordion a horizontal row on phones too (the component flips
-   itself vertical below 520px, which would not fit this full-frame film) */
-@media (max-width: 520px){
-  .memories__wall{ align-items:flex-start; padding-top:27vh; }
-  .memories__rows .accordion-gallery{ flex-direction:row; perspective:1400px; height:22vh !important; }
-  .memories__rows .ag-panel{ min-height:0; }
-  .memories__rows .ag-panel__media{ width:var(--ag-media-size); height:100%; }
-}
+/* the React wall fills the frame behind the title */
+.memories__wall{ position:absolute; inset:0; z-index:1; }
 
 /* ============================================================
    REPLAY
