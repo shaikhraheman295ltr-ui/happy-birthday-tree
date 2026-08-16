@@ -51,10 +51,10 @@ const MemoriesWall = () => {
     <DriftWall
       items={items}
       columns={columns}
-      tileWidth={220}
-      tileHeight={146}
+      tileWidth={170}
+      tileHeight={300}
       gap={16}
-      radius={16}
+      radius={14}
       tilt={14}
       turn={-8}
       roll={0}
@@ -65,10 +65,10 @@ const MemoriesWall = () => {
       variance={0.45}
       parallax={0.7}
       pauseOnHover
-      lift={70}
-      fade={0.5}
-      dim={0.55}
-      grayscale
+      lift={60}
+      fade={0.45}
+      dim={0.95}
+      grayscale={false}
       overlayColor="#3a0d22"
     />
   );
