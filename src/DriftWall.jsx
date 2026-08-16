@@ -104,6 +104,9 @@ const DriftWall = ({
   useEffect(() => {
     offsetsRef.current = columnMeta.map((meta, c) => meta.copyHeight * ((c * 0.37) % 1));
     velocitiesRef.current = columnItems.map(() => 0);
+    trackRefs.current.forEach((el, c) => {
+      if (el) el.style.transform = `translate3d(0, ${-(offsetsRef.current[c] ?? 0)}px, 0)`;
+    });
   }, [columnMeta, columnItems]);
 
   const applyPlaneTransform = useCallback(
@@ -137,7 +140,7 @@ const DriftWall = ({
           const meta = columnMeta[c];
           if (!meta) continue;
           const paused = wallHoveredRef.current && pauseOnHover;
-          const factor = paused || hoveredColRef.current === c ? 0 : 1;
+          const factor = paused ? 0 : 1;
           const target = baseVelocities[c] * factor;
 
           const ease = 1 - Math.exp(-dt / (target === 0 ? 0.16 : 0.28));
@@ -189,14 +192,6 @@ const DriftWall = ({
           y: (e.clientY - rect.top) / rect.height - 0.5
         };
       }
-      const hit = document.elementFromPoint(e.clientX, e.clientY);
-      const tile = hit && hit.closest ? hit.closest('[data-tile-id]') : null;
-      if (!tile) return;
-      const id = tile.dataset.tileId;
-      if (id === activeIdRef.current) return;
-      activeIdRef.current = id;
-      hoveredColRef.current = Number(tile.dataset.col);
-      setActiveId(id);
     },
     [parallax, reduced]
   );

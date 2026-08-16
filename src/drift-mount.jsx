@@ -63,8 +63,8 @@ const MemoriesWall = () => {
       speed={34}
       direction="up"
       variance={0.45}
-      parallax={0.7}
-      pauseOnHover
+      parallax={0}
+      pauseOnHover={false}
       lift={60}
       fade={0.45}
       dim={0.95}
