@@ -203,6 +203,23 @@
       <p class="wish__sub" id="wSub">here&rsquo;s to a year that blooms</p>
     </div>
 
+    <!-- ACT 5 — THE MEMORIES (a drifting wall of photos, React DriftWall) ------
+         After the tree settles, the film hands off into a wall of ARPITA's
+         photos drifting in from deep space. React mounts into #drift-root. -->
+    <section class="memories" id="memories" aria-label="A wall of memories for Arpita" hidden>
+      <div class="memories__bg" aria-hidden="true"></div>
+
+      <header class="memories__head">
+        <p class="memories__eyebrow" id="mEyebrow">a year of beautiful moments</p>
+        <h1 class="memories__title" id="mTitle">Happy Birthday</h1>
+        <p class="memories__name" id="mName">ARPITA</p>
+        <span class="memories__rule" id="mRule" aria-hidden="true"></span>
+        <p class="memories__sub" id="mSub">hover a memory &mdash; each one is yours</p>
+      </header>
+
+      <div class="memories__wall" id="drift-root"></div>
+    </section>
+
     <!-- Play the film again once it has settled. -->
     <button class="replay" id="replay" type="button" hidden>
       <svg viewBox="0 0 24 24" aria-hidden="true" width="15" height="15">

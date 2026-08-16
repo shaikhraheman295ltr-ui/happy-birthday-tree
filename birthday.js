@@ -67,6 +67,8 @@ const barBot  = $('barBot');
 const uline   = $('uline').querySelector('.uline__path');
 const bloom   = $('bloom');
 const replay  = $('replay');
+const memories= $('memories');
+const driftRoot = $('drift-root');
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isRecord     = new URLSearchParams(location.search).has('record');
@@ -505,6 +507,7 @@ function treeFrame(now){
 
   if (!window.bdayDone && t >= T.done) window.bdayDone = true;
   if (!replayArmed && t >= T.done + 1.0){ replayArmed = true; armReplay(); }
+  if (!memoriesShown && t >= T.done + 2.4) enterMemories();
 
   treeRAF = requestAnimationFrame(treeFrame);
 }
@@ -874,11 +877,39 @@ function armReplay(){
   requestAnimationFrame(() => replay.classList.add('is-shown'));
 }
 
+/* ============================================================
+   ACT 5 — THE MEMORIES (React DriftWall)
+   The tree's own rAF hands off into the photo wall once it has
+   settled. React is imported lazily (code-split by Vite) so the
+   film's first four acts never pay for it.
+   ============================================================ */
+let memoriesShown = false;
+let wallMounted = false;
+function mountWall(){
+  if (wallMounted) return;
+  wallMounted = true;
+  import('./src/drift-mount.jsx')
+    .then(({ mountDriftWall }) => {
+      if (document.body.contains(driftRoot)) mountDriftWall(driftRoot);
+    })
+    .catch(() => { wallMounted = false; });
+}
+function enterMemories(){
+  if (memoriesShown) return;
+  memoriesShown = true;
+  showWish(false);
+  mountWall();
+  memories.hidden = false;
+  requestAnimationFrame(() => memories.classList.add('is-in'));
+}
+
 /* back to Act 1, ready to be drawn again */
 function resetAll(){
   treeStop();
   showWish(false);
   window.bdayDone = false; replayArmed = false;
+  memoriesShown = false;
+  memories.classList.remove('is-in'); memories.hidden = true;
   replay.classList.remove('is-shown'); replay.hidden = true;
   if (filmTL){ filmTL.pause(0); }
   gsap.set([flood, bloom], { autoAlpha: 0 });
@@ -915,6 +946,7 @@ resize();
 
 if (reduceMotion){
   drawFinal();
+  enterMemories();
 } else {
   buildMotes();
   document.fonts && document.fonts.ready.then(() => { refreshRig(); setDraw(0); });
