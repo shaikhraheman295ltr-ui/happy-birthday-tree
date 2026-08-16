@@ -67,6 +67,7 @@ const barBot  = $('barBot');
 const uline   = $('uline').querySelector('.uline__path');
 const bloom   = $('bloom');
 const replay  = $('replay');
+const nextBtn = $('next');
 const memories= $('memories');
 const driftRoot = $('drift-root');
 const bio = $('bio');
@@ -508,8 +509,11 @@ function treeFrame(now){
 
   if (!window.bdayDone && t >= T.done) window.bdayDone = true;
   if (!replayArmed && t >= T.done + 1.0){ replayArmed = true; armReplay(); }
-  if (!bioShown && t >= T.done + 2.4){ bioShown = true; bioT0 = t; showBio(true); }
-  if (bioShown && !memoriesShown && t >= bioT0 + BIO_HOLD) enterMemories();
+  if (!bioShown && t >= T.done + 2.4){ bioShown = true; bioPageT0 = t; showBio(true); showBioPage(0); }
+  if (bioShown && !memoriesShown){
+    if (bioPage < bioPages.length - 1 && t >= bioPageT0 + PAGE_HOLD){ bioPageT0 = t; showBioPage(bioPage + 1); }
+    else if (bioPage === bioPages.length - 1 && t >= bioPageT0 + BIO_HOLD) enterMemories();
+  }
 
   treeRAF = requestAnimationFrame(treeFrame);
 }
@@ -880,22 +884,58 @@ function armReplay(){
 }
 
 /* ============================================================
-   ACT 5 — THE STORY (ARPITA's biography card)
-   After the tree settles, her story plays for a while, then the
-   film hands off into the memories wall.
+   ACT 5 — THE STORY (ARPITA's biography, three pages)
+   After the tree settles, her story plays page by page. The Next
+   button (visible from the start) can also skip the earlier acts.
    ============================================================ */
-const BIO_HOLD = 11;   /* seconds the story card holds before the wall */
+const BIO_HOLD = 11;   /* seconds the last page holds before the wall */
+const PAGE_HOLD = 9;   /* seconds each page holds before auto-advancing */
 let bioShown = false;
-let bioT0 = 0;
+let bioPageT0 = 0;
 let bioTimer = 0;
+let nextTimer = 0;
+let bioExitTimer = 0;
+const bioPages = Array.from(document.querySelectorAll('.bio__page'));
+const bioDots  = Array.from(document.querySelectorAll('.bio__dot'));
+let bioPage = 0;
+
+function showBioPage(i){
+  bioPage = Math.min(Math.max(i, 0), bioPages.length - 1);
+  bioPages.forEach((p, k) => p.classList.toggle('is-active', k === bioPage));
+  bioDots.forEach((d, k) => d.classList.toggle('is-on', k === bioPage));
+}
+function showNext(on){
+  if (on){
+    nextBtn.hidden = false;
+    requestAnimationFrame(() => nextBtn.classList.add('is-shown'));
+  } else {
+    nextBtn.classList.remove('is-shown');
+    nextBtn.hidden = true;
+  }
+}
 function showBio(on){
   if (on){
+    if (bioExitTimer){ clearTimeout(bioExitTimer); bioExitTimer = 0; }
+    bio.classList.remove('is-out');
     bio.hidden = false;
     requestAnimationFrame(() => bio.classList.add('is-in'));
+    if (nextTimer) clearTimeout(nextTimer);
+    nextTimer = setTimeout(() => showNext(true), 900);
   } else {
     bio.classList.remove('is-in');
-    bio.hidden = true;
+    bio.classList.add('is-out');          /* fade out, then detach */
+    if (nextTimer){ clearTimeout(nextTimer); nextTimer = 0; }
+    if (bioExitTimer) clearTimeout(bioExitTimer);
+    bioExitTimer = setTimeout(() => { bio.hidden = true; }, 800);
   }
+}
+function skipToBio(){
+  if (bioShown || memoriesShown) return;
+  bioShown = true;
+  bioPageT0 = treeStartT ? (performance.now() - treeStartT) / 1000 : 0;
+  if (!treeRAF) treeStart();             /* keep the timed hand-off alive */
+  showBio(true);
+  showBioPage(0);
 }
 
 /* ============================================================
@@ -920,6 +960,7 @@ function enterMemories(){
   memoriesShown = true;
   showWish(false);
   showBio(false);
+  showNext(false);
   mountWall();
   memories.hidden = false;
   requestAnimationFrame(() => memories.classList.add('is-in'));
@@ -932,9 +973,14 @@ function resetAll(){
   window.bdayDone = false; replayArmed = false;
   memoriesShown = false; bioShown = false;
   if (bioTimer){ clearTimeout(bioTimer); bioTimer = 0; }
+  if (bioExitTimer){ clearTimeout(bioExitTimer); bioExitTimer = 0; }
   showBio(false);
+  bio.hidden = true;
+  bio.classList.remove('is-out');
+  showBioPage(0);
   memories.classList.remove('is-in'); memories.hidden = true;
   replay.classList.remove('is-shown'); replay.hidden = true;
+  showNext(true);
   if (filmTL){ filmTL.pause(0); }
   gsap.set([flood, bloom], { autoAlpha: 0 });
   gsap.set(field, { autoAlpha: 0 });
@@ -967,6 +1013,18 @@ let resizeRAF = 0;
 window.addEventListener('resize', () => { if (resizeRAF) return; resizeRAF = requestAnimationFrame(() => { resizeRAF = 0; resize(); }); });
 
 resize();
+
+nextBtn.addEventListener('click', () => {
+  if (memoriesShown) return;
+  if (!bioShown){ skipToBio(); return; }
+  if (bioPage < bioPages.length - 1){
+    showBioPage(bioPage + 1);
+    bioPageT0 = treeStartT ? (performance.now() - treeStartT) / 1000 : 0;
+    return;
+  }
+  enterMemories();
+});
+showNext(true);
 
 if (reduceMotion){
   drawFinal();

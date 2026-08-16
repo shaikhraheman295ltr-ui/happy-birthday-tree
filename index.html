@@ -203,25 +203,33 @@
       <p class="wish__sub" id="wSub">here&rsquo;s to a year that blooms</p>
     </div>
 
-    <!-- ACT 5 — THE STORY (ARPITA's biography card) --------------------------
-         After the tree settles, a card tells her story: her photo, her
-         birthday, and a word from a friend — before the photo wall. -->
+    <!-- ACT 5 — THE STORY (ARPITA's biography, three pages) -------------------
+         After the tree settles, her story plays page by page: her photo,
+         her birthday, and a word from a friend — then the photo wall.
+         The Next button (visible from the start) skips the earlier acts,
+         flips the story pages, and glides into the wall. -->
     <section class="bio" id="bio" aria-label="The story of Arpita" hidden>
       <div class="bio__bg" aria-hidden="true"></div>
 
-      <figure class="bio__card">
-        <div class="bio__photo" aria-hidden="true">
-          <img src="image/1.0.jpg" alt="" width="720" height="1600" />
-          <span class="bio__badge">born &middot; 1st September 2007</span>
-        </div>
-
-        <figcaption class="bio__text">
+      <div class="bio__pages">
+        <figure class="bio__page is-active" aria-hidden="true">
           <p class="bio__eyebrow">the story of a girl</p>
+          <div class="bio__photo">
+            <img src="image/1.0.jpg" alt="" width="720" height="1600" />
+            <span class="bio__badge">born &middot; 1st September 2007</span>
+          </div>
+        </figure>
+
+        <figure class="bio__page" aria-hidden="true">
+          <p class="bio__eyebrow">a girl worth knowing</p>
           <h1 class="bio__title">ARPITA</h1>
           <p class="bio__facts">
             Nineteen years of light &mdash; a Virgo with a heart of gold, a
             stubborn dreamer, and the kindest soul in every room.
           </p>
+        </figure>
+
+        <figure class="bio__page" aria-hidden="true">
           <div class="bio__speech">
             <p>
               You&rsquo;ve carried storms nobody ever saw, and you came out
@@ -239,8 +247,12 @@
             </p>
           </div>
           <p class="bio__sign">happy birthday, beautiful &mdash; your friend, always</p>
-        </figcaption>
-      </figure>
+        </figure>
+      </div>
+
+      <div class="bio__dots" aria-hidden="true">
+        <span class="bio__dot is-on"></span><span class="bio__dot"></span><span class="bio__dot"></span>
+      </div>
     </section>
 
     <!-- ACT 6 — THE MEMORIES (a drifting wall of photos, React DriftWall) ------
@@ -259,6 +271,14 @@
 
       <div class="memories__wall" id="drift-root"></div>
     </section>
+
+    <!-- Skip the story card and go straight to the memories wall. -->
+    <button class="next" id="next" type="button" hidden>
+      Next
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="14" height="14">
+        <path d="M4 12h14m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
 
     <!-- Play the film again once it has settled. -->
     <button class="replay" id="replay" type="button" hidden>
